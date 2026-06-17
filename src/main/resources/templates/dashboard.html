@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - Bolão Copa 2026</title>
+</head>
+<body>
+<header>
+    <h1>🏆 Painel do Bolão Copa 2026</h1>
+    <div>
+        <span>Usuário: <strong th:text="${#authentication.name}">...</strong></span> |
+
+        <span>Perfil: <span th:text="${#authentication.authorities}">...</span></span>
+
+        <form th:action="@{/sair}" method="POST" style="display: inline; margin-left: 20px;">
+            <button type="submit" style="background-color: #ff4d4d; color: white; cursor: pointer;">Sair / Logout</button>
+        </form>
+    </div>
+</header>
+
+<main>
+    <h3>Bem-vindo ao sistema de palpites!</h3>
+    <p>Aqui você poderá listar os jogos e dar seus lances.</p>
+
+    <div sec:authorize="hasAuthority('ROLE_ADMIN')" style="background: #ffcccc; padding: 10px; margin: 10px 0;">
+        ⚠️ <strong>Área do Administrador:</strong> Este bloco só aparece para quem é ADMIN.
+    </div>
+
+    <div id="listaJogos"></div>
+</main>
+
+</body>
+</html>
