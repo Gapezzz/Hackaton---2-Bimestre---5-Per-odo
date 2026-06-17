@@ -4,14 +4,20 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "usuarios")
-public class Usuario {
+public class Usuario implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,5 +54,45 @@ public class Usuario {
     @PrePersist
     protected void onCreate() {
         this.criadoEm = LocalDateTime.now();
+    }
+
+    // ==========================================
+    // MÉTODOS OBRIGATÓRIOS DA INTERFACE USERDETAILS
+    // ==========================================
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // Vincula o Enum do banco ao formato "ROLE_ADMIN" ou "ROLE_USER" exigido pelo Spring
+        return List.of(new SimpleGrantedAuthority("ROLE_" + this.perfil.name()));
+    }
+
+    @Override
+    public String getPassword() {
+        return this.senha;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true; // Conta não expirada
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return this.ativo; // Respeita o bloqueio feito pelo administrador (RF-046)
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true; // Credenciais não expiradas
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.ativo; // Vincula ao status ativo/inativo do seu banco de dados
     }
 }

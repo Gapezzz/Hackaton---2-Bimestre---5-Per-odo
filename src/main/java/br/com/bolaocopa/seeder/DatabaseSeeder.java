@@ -1,4 +1,4 @@
-package br.com.bolaocopa.config;
+package br.com.bolaocopa.seeder;
 
 import br.com.bolaocopa.model.Perfil;
 import br.com.bolaocopa.model.Usuario;

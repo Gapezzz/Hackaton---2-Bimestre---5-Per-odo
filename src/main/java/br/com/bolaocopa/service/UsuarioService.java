@@ -16,10 +16,13 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder criptografiaSenha;
+    private final TokenService tokenService; // Injeção do novo serviço
 
-    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder criptografiaSenha) {
+    // Atualizado o construtor para incluir o TokenService
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder criptografiaSenha, TokenService tokenService) {
         this.usuarioRepository = usuarioRepository;
         this.criptografiaSenha = criptografiaSenha;
+        this.tokenService = tokenService;
     }
 
     @Transactional
@@ -50,8 +53,11 @@ public class UsuarioService {
             throw new RegraNegocioException("E-mail ou senha inválidos.");
         }
 
+        // GERAÇÃO REAL DO TOKEN AQUI:
+        String tokenGerado = tokenService.gerarToken(usuario);
+
         return new RespostaAutenticacao(
-                "SESSAO_ATIVA",
+                tokenGerado, // Token dinâmico inserido aqui
                 "Bearer",
                 usuario.getId(),
                 usuario.getNome(),

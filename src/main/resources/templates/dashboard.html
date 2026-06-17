@@ -1,20 +1,32 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <title>Dashboard - Bolão Copa 2026</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
 <header>
     <h1>🏆 Painel do Bolão Copa 2026</h1>
     <div>
-        <span>Usuário: <strong th:text="${#authentication.name}">...</strong></span> |
+        <!--
+            Thymeleaf + Spring Security: exibe o nome e perfil do usuário autenticado
+            diretamente do contexto do servidor, sem depender de localStorage.
+        -->
+        <span>Usuário: <strong sec:authentication="name">Carregando...</strong></span> |
+        <span>Perfil:
+            <span sec:authorize="hasRole('ADMIN')">ADMIN</span>
+            <span sec:authorize="hasRole('USER')">USER</span>
+        </span>
 
-        <span>Perfil: <span th:text="${#authentication.authorities}">...</span></span>
-
-        <form th:action="@{/sair}" method="POST" style="display: inline; margin-left: 20px;">
-            <button type="submit" style="background-color: #ff4d4d; color: white; cursor: pointer;">Sair / Logout</button>
+        <!-- Logout via POST para garantir a limpeza do cookie no servidor -->
+        <form th:action="@{/sair}" method="POST" style="display: inline;">
+            <button type="submit"
+                    style="background-color: #ff4d4d; color: white; cursor: pointer; margin-left: 20px; padding: 5px 10px; border: none; border-radius: 3px;">
+                Sair / Logout
+            </button>
         </form>
     </div>
 </header>
@@ -23,12 +35,49 @@
     <h3>Bem-vindo ao sistema de palpites!</h3>
     <p>Aqui você poderá listar os jogos e dar seus lances.</p>
 
-    <div sec:authorize="hasAuthority('ROLE_ADMIN')" style="background: #ffcccc; padding: 10px; margin: 10px 0;">
+    <!--
+        sec:authorize: bloco visível SOMENTE para ADMIN, renderizado pelo servidor.
+        Não depende de JavaScript ou localStorage — é seguro e confiável.
+    -->
+    <div sec:authorize="hasRole('ADMIN')"
+         style="background: #ffcccc; padding: 10px; margin: 10px 0;">
         ⚠️ <strong>Área do Administrador:</strong> Este bloco só aparece para quem é ADMIN.
     </div>
 
-    <div id="listaJogos"></div>
+    <div id="listaJogos">
+        <p style="color: #888;">Nenhuma partida disponível no momento.</p>
+    </div>
 </main>
 
+<script>
+    /*
+     * O token JWT trafega exclusivamente via cookie HttpOnly (definido pelo servidor).
+     * Não há necessidade de lê-lo ou salvá-lo no localStorage.
+     * O cookie é enviado automaticamente pelo navegador em todas as requisições.
+     *
+     * Exemplo de como chamar endpoints protegidos futuramente:
+     * O cookie é incluído automaticamente — não é necessário passar o header Authorization.
+     */
+    async function carregarJogos() {
+        try {
+            // O cookie HttpOnly é enviado automaticamente pelo navegador (credentials: 'include')
+            const resposta = await fetch('/api/partidas', {
+                method: 'GET',
+                credentials: 'include'
+            });
+
+            if (resposta.ok) {
+                const jogos = await resposta.json();
+                const listaDiv = document.getElementById('listaJogos');
+                // TODO: renderizar os jogos na tela com um forEach
+                console.log('Jogos carregados:', jogos);
+            }
+        } catch (erro) {
+            console.error('Erro ao buscar lista de jogos:', erro);
+        }
+    }
+
+    carregarJogos();
+</script>
 </body>
 </html>
