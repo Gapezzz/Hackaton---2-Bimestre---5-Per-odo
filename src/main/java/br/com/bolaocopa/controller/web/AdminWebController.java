@@ -24,13 +24,12 @@ public class AdminWebController {
         return "dashboard";
     }
 
-    // Rota para invalidar a autenticação limpando o Cookie (RF-005)
     @PostMapping("/sair")
     public String processarLogoutWeb(HttpServletResponse response) {
         Cookie cookie = new Cookie("TOKEN_BOLAOMC", null);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
-        cookie.setMaxAge(0); // Força a exclusão imediata do cookie no navegador
+        cookie.setMaxAge(0); // Deleta o cookie do navegador instantaneamente
         response.addCookie(cookie);
         return "redirect:/login?sair=true";
     }

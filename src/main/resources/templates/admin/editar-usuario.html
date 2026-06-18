@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+<head>
+    <div th:replace="~{fragments/layout :: head-comum('Editar Usuário')}"></div>
+</head>
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f7fafc; margin: 0; color: #2d3748; padding-bottom: 60px;">
+
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<main style="padding: 40px; max-width: 450px; margin: 0 auto;">
+    <h3 style="margin-top: 0; margin-bottom: 20px; text-align: center;">Alterar Dados do Usuário</h3>
+
+    <div th:if="${error}" style="background-color: #fed7d7; border: 1px solid #f56565; color: #c53030; padding: 12px; border-radius: 4px; margin-bottom: 20px; font-weight: bold; font-size: 14px;">
+        <span th:text="${error}">Erro ao salvar alterações.</span>
+    </div>
+
+    <form th:action="@{/admin/usuarios/editar/{id}(id=${usuario.id})}" th:object="${usuario}" method="POST" style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0;">
+        <input type="hidden" th:field="*{id}" />
+
+        <div style="margin-bottom: 18px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 6px; color: #4a5568;">Nome do Participante:</label>
+            <input type="text" th:field="*{nome}" required placeholder="Digite o nome completo" style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 4px; background: white; box-sizing: border-box; font-size: 14px;" />
+        </div>
+
+        <div style="margin-bottom: 18px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 6px; color: #4a5568;">Endereço de E-mail:</label>
+            <input type="email" th:field="*{email}" required placeholder="exemplo@email.com" style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 4px; background: white; box-sizing: border-box; font-size: 14px;" />
+        </div>
+
+        <div style="margin-bottom: 25px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 6px; color: #4a5568;">Nível de Acesso (Perfil):</label>
+            <select th:field="*{perfil}" style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 4px; background: white; box-sizing: border-box; font-size: 14px; cursor: pointer;">
+                <option th:each="p : ${perfis}" th:value="${p}" th:text="${p}"></option>
+            </select>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <button type="submit" style="background-color: #38a169; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 4px; font-weight: bold; font-size: 14px;">
+                Salvar Alterações
+            </button>
+            <a th:href="@{/admin/usuarios}" style="color: #4a5568; text-decoration: none; font-size: 14px; font-weight: 500;">
+                Cancelar
+            </a>
+        </div>
+    </form>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

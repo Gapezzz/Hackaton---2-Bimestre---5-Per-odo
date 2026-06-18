@@ -56,13 +56,8 @@ public class Usuario implements UserDetails {
         this.criadoEm = LocalDateTime.now();
     }
 
-    // ==========================================
-    // MÉTODOS OBRIGATÓRIOS DA INTERFACE USERDETAILS
-    // ==========================================
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Vincula o Enum do banco ao formato "ROLE_ADMIN" ou "ROLE_USER" exigido pelo Spring
         return List.of(new SimpleGrantedAuthority("ROLE_" + this.perfil.name()));
     }
 

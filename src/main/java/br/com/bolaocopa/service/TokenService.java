@@ -45,8 +45,6 @@ public class TokenService {
                     .verify(tokenJWT)
                     .getSubject();
         } catch (JWTVerificationException exception) {
-            // CORREÇÃO: Retorna null em vez de estourar uma RuntimeException.
-            // Isso permite que o Filtro limpe o contexto de forma segura sem quebrar a aplicação.
             return null;
         }
     }
