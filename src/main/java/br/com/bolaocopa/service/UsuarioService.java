@@ -7,6 +7,7 @@ import br.com.bolaocopa.exception.RegraNegocioException;
 import br.com.bolaocopa.model.Perfil;
 import br.com.bolaocopa.model.Usuario;
 import br.com.bolaocopa.repository.UsuarioRepository;
+import br.com.bolaocopa.security.JwtService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,10 +17,12 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder criptografiaSenha;
+    private final JwtService jwtService;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder criptografiaSenha) {
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder criptografiaSenha, JwtService jwtService) {
         this.usuarioRepository = usuarioRepository;
         this.criptografiaSenha = criptografiaSenha;
+        this.jwtService = jwtService;
     }
 
     @Transactional
@@ -50,8 +53,10 @@ public class UsuarioService {
             throw new RegraNegocioException("E-mail ou senha inválidos.");
         }
 
+        String token = jwtService.gerarToken(usuario.getEmail(), usuario.getPerfil().name());
+
         return new RespostaAutenticacao(
-                "SESSAO_ATIVA",
+                token,
                 "Bearer",
                 usuario.getId(),
                 usuario.getNome(),
