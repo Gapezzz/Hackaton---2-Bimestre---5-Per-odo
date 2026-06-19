@@ -5,44 +5,126 @@
 <head>
     <div th:replace="~{fragments/layout :: head-comum('Dashboard')}"></div>
 </head>
-<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f7fafc; margin: 0; color: #2d3748; padding-bottom: 60px;">
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f7fafc; margin: 0; color: #2d3748; padding-bottom: 80px;">
 
 <div th:replace="~{fragments/layout :: navbar}"></div>
 
 <main style="padding: 30px; max-width: 1200px; margin: 0 auto;">
-    <h3>Bem-vindo ao sistema de palpites!</h3>
-    <p>Aqui você poderá listar os jogos e dar seus lances.</p>
 
-    <div sec:authorize="hasRole('ADMIN') or hasAuthority('ADMIN')"
-         style="background: #fff5f5; padding: 20px; margin: 20px 0; border: 1px solid #fed7d7; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-        <div>
-            <strong>Área do Administrador:</strong> Este bloco de gerenciamento é restrito ao seu nível de acesso.
-        </div>
-        <div>
-            <a th:href="@{/admin/usuarios}"
-               style="background-color: #2d3748; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 14px; transition: background 0.2s;">
-                Gerenciar Usuários
-            </a>
+    <div style="margin-bottom: 25px;">
+        <h2 style="margin: 0; font-size: 24px; color: #2d3748;">Painel do Bolão Copa 2026</h2>
+        <p style="margin: 5px 0 0 0; color: #718096;">Bem-vindo ao sistema! Acompanhe os indicadores e gerencie as rodadas do campeonato.</p>
+    </div>
+
+    <div style="margin-bottom: 25px;" sec:authorize="hasRole('ADMIN')">
+        <div style="background: #fff5f5; padding: 20px; border: 1px solid #fed7d7; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+            <div>
+                <strong style="color: #c53030;">Área do Administrador:</strong> Utilize as ferramentas ao lado para atualizar lances, cadastrar rodadas ou moderar contas.
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <a th:href="@{/admin/usuarios}"
+                   style="background-color: #2d3748; color: white; padding: 10px 18px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 13px; transition: background 0.2s;">
+                    Gerenciar Usuários
+                </a>
+                <a th:href="@{/admin/partidas}"
+                   style="background-color: #3182ce; color: white; padding: 10px 18px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 13px; transition: background 0.2s;">
+                    Gerenciar Partidas
+                </a>
+            </div>
         </div>
     </div>
 
-    <div id="listaJogos">
-        <p style="color: #718096;">Nenhuma partida disponível no momento.</p>
+    <div style="background: white; padding: 25px; border-radius: 8px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+        <h4 style="margin-top: 0; margin-bottom: 15px; font-size: 18px; color: #4a5568; border-bottom: 2px solid #edf2f7; padding-bottom: 10px;">
+            Partidas Disponíveis
+        </h4>
+
+        <div id="listaJogos">
+            <p style="color: #718096; margin: 0;">Carregando partidas disponíveis...</p>
+        </div>
     </div>
+
 </main>
 
 <div th:replace="~{fragments/layout :: footer}"></div>
 
 <script>
     async function carregarJogos() {
+        const listaDiv = document.getElementById('listaJogos');
         try {
             const resposta = await fetch('/api/partidas', { method: 'GET', credentials: 'include' });
+
             if (resposta.ok) {
                 const jogos = await resposta.json();
-                console.log('Jogos carregados:', jogos);
+                console.log('Jogos carregados com sucesso:', jogos);
+
+                if (!jogos || jogos.length === 0) {
+                    listaDiv.innerHTML = `<p style="color: #718096; margin: 0;">Nenhuma partida disponível no momento.</p>`;
+                    return;
+                }
+
+                // Geração dinâmica da tabela idêntica ao padrão estrutural do projeto
+                let htmlTabela = `
+                    <table border="1" style="width: 100%; border-collapse: collapse; background: white; text-align: left; border: 1px solid #cbd5e0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+                        <thead>
+                            <tr style="background-color: #e2e8f0;">
+                                <th style="padding: 12px; border: 1px solid #cbd5e0; color: #4a5568;">Fase</th>
+                                <th style="padding: 12px; border: 1px solid #cbd5e0; color: #4a5568;">Confronto</th>
+                                <th style="padding: 12px; border: 1px solid #cbd5e0; color: #4a5568; text-align: center;">Placar Oficial</th>
+                                <th style="padding: 12px; border: 1px solid #cbd5e0; color: #4a5568;">Data / Hora</th>
+                                <th style="padding: 12px; border: 1px solid #cbd5e0; color: #4a5568;">Estádio</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                jogos.forEach(jogo => {
+                    // Conversão de data ISO padrão do backend para formato local brasileiro
+                    const dataFormatada = jogo.dataHora
+                        ? new Date(jogo.dataHora).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+                        : 'A definir';
+
+                    const placar = jogo.encerrada
+                        ? `${jogo.golsMandante} x ${jogo.golsVisitante}`
+                        : `<span style="color: #a0aec0; font-weight: normal; font-size: 13px;">Agendado</span>`;
+
+                    // Fallback visual caso a partida não possua imagem gravada em String no banco
+                    const imgMandante = jogo.fotoMandante ? jogo.fotoMandante : 'https://placehold.co/24x16/cbd5e0/ffffff?text=M';
+                    const imgVisitante = jogo.fotoVisitante ? jogo.fotoVisitante : 'https://placehold.co/24x16/cbd5e0/ffffff?text=V';
+
+                    htmlTabela += `
+                        <tr style="border-bottom: 1px solid #e2e8f0;">
+                            <td style="padding: 12px; border: 1px solid #cbd5e0;">${jogo.fase}</td>
+                            <td style="padding: 12px; border: 1px solid #cbd5e0; font-weight: 500; vertical-align: middle;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <img src="${imgMandante}" alt="${jogo.mandante}" style="width: 24px; height: 16px; object-fit: cover; border-radius: 2px; border: 1px solid #e2e8f0;" />
+                                    <span>${jogo.mandante}</span>
+                                    <span style="color: #a0aec0; font-weight: normal; margin: 0 4px;">vs</span>
+                                    <img src="${imgVisitante}" alt="${jogo.visitante}" style="width: 24px; height: 16px; object-fit: cover; border-radius: 2px; border: 1px solid #e2e8f0;" />
+                                    <span>${jogo.visitante}</span>
+                                </div>
+                            </td>
+                            <td style="padding: 12px; border: 1px solid #cbd5e0; text-align: center; font-weight: bold;">
+                                ${placar}
+                            </td>
+                            <td style="padding: 12px; border: 1px solid #cbd5e0;">${dataFormatada}</td>
+                            <td style="padding: 12px; border: 1px solid #cbd5e0;">${jogo.estadio}</td>
+                        </tr>
+                    `;
+                });
+
+                htmlTabela += `
+                        </tbody>
+                    </table>
+                `;
+
+                listaDiv.innerHTML = htmlTabela;
+            } else {
+                listaDiv.innerHTML = `<p style="color: #e53e3e; margin: 0;">Erro ao carregar a listagem de partidas (Status: ${resposta.status}).</p>`;
             }
         } catch (erro) {
-            console.error('Erro ao buscar lista de jogos:', erro);
+            console.error('Erro ao buscar lista de jogos via API REST:', erro);
+            listaDiv.innerHTML = `<p style="color: #e53e3e; margin: 0;">Falha de comunicação com o servidor de dados.</p>`;
         }
     }
     carregarJogos();

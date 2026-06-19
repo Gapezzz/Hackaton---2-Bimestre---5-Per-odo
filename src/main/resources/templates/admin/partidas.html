@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+<head>
+    <div th:replace="~{fragments/layout :: head-comum('Gerenciamento de Partidas')}"></div>
+</head>
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f7fafc; margin: 0; color: #2d3748; padding-bottom: 60px;">
+
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<main style="padding: 30px; max-width: 1200px; margin: 0 auto;">
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="margin: 0;">Calendário de Jogos da Copa</h3>
+        <a th:href="@{/admin/partidas/novo}"
+           style="background-color: #38a169; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 14px;">
+            Incluir Nova Partida
+        </a>
+    </div>
+
+    <table border="1" style="width: 100%; border-collapse: collapse; background: white; text-align: left; border: 1px solid #cbd5e0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+        <thead>
+        <tr style="background-color: #e2e8f0;">
+            <th style="padding: 12px; border: 1px solid #cbd5e0;">Fase</th>
+            <th style="padding: 12px; border: 1px solid #cbd5e0;">Confronto</th>
+            <th style="padding: 12px; border: 1px solid #cbd5e0;">Placar Oficial</th>
+            <th style="padding: 12px; border: 1px solid #cbd5e0;">Data / Hora</th>
+            <th style="padding: 12px; border: 1px solid #cbd5e0;">Estádio</th>
+            <th style="padding: 12px; border: 1px solid #cbd5e0;">Ações</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="p : ${partidas}" style="border-bottom: 1px solid #e2e8f0;">
+            <td style="padding: 12px; border: 1px solid #cbd5e0;" th:text="${p.fase}"></td>
+
+            <td style="padding: 12px; border: 1px solid #cbd5e0; font-weight: 500;">
+                <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 10px;">
+                    <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+                        <!-- Validação adicionada para evitar ícone de imagem quebrada -->
+                        <img th:if="${p.fotoMandante != null and !p.fotoMandante.empty}" th:src="${p.fotoMandante}" style="width: 32px; height: 22px; border-radius: 4px; object-fit: cover; border: 1px solid #cbd5e0;" />
+                        <span th:text="${p.mandante}"></span>
+                    </div>
+                    <span style="color: #a0aec0; font-size: 12px; flex-shrink: 0;">VS</span>
+                    <div style="display: flex; align-items: center; gap: 8px; flex: 1; justify-content: flex-end;">
+                        <span th:text="${p.visitante}"></span>
+                        <!-- Validação adicionada para evitar ícone de imagem quebrada -->
+                        <img th:if="${p.fotoVisitante != null and !p.fotoVisitante.empty}" th:src="${p.fotoVisitante}" style="width: 32px; height: 22px; border-radius: 4px; object-fit: cover; border: 1px solid #cbd5e0;" />
+                    </div>
+                </div>
+            </td>
+
+            <td style="padding: 12px; border: 1px solid #cbd5e0; text-align: center; font-weight: bold;">
+                <span th:if="${p.encerrada}" th:text="${p.golsMandante} + ' x ' + ${p.golsVisitante}" style="background-color: #e2e8f0; padding: 4px 8px; border-radius: 4px;"></span>
+                <span th:unless="${p.encerrada}" style="color: #4a5568; font-weight: normal; font-size: 13px; background-color: #feebc8; color: #c05621; padding: 4px 8px; border-radius: 4px;">Agendado</span>
+            </td>
+            <td style="padding: 12px; border: 1px solid #cbd5e0;" th:text="${#temporals.format(p.dataHora, 'dd/MM/yyyy HH:mm')}"></td>
+            <td style="padding: 12px; border: 1px solid #cbd5e0;" th:text="${p.estadio}"></td>
+
+            <td style="padding: 12px; border: 1px solid #cbd5e0;">
+                <div style="display: flex; gap: 6px; align-items: center;">
+
+                    <a th:href="@{/admin/partidas/resultado/{id}(id=${p.id})}"
+                       style="background-color: #3182ce; color: white; padding: 6px 10px; text-decoration: none; border-radius: 4px; font-size: 12px; font-weight: bold;">
+                        Placar
+                    </a>
+
+                    <a th:href="@{/admin/partidas/editar/{id}(id=${p.id})}"
+                       style="background-color: #dd6b20; color: white; padding: 6px 10px; text-decoration: none; border-radius: 4px; font-size: 12px; font-weight: bold;">
+                        Editar
+                    </a>
+
+                    <form th:action="@{/admin/partidas/excluir/{id}(id=${p.id})}" method="POST" style="display:inline; margin: 0;"
+                          th:onclick="return confirm('Excluir esta partida apagará os palpites vinculados. Prosseguir?');">
+                        <button type="submit" th:disabled="${p.encerrada}"
+                                style="background-color: #e53e3e; color: white; border: none; padding: 6px 10px; cursor: pointer; border-radius: 4px; font-size: 12px; font-weight: bold; transition: opacity 0.2s;"
+                                th:styleappend="${p.encerrada} ? 'opacity: 0.4; cursor: not-allowed;' : ''">
+                            Excluir
+                        </button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>
