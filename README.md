@@ -15,6 +15,8 @@ Aplicação full-stack para um sistema de bolão da Copa do Mundo 2026, desenvol
 - ✅ Painel administrativo para gerenciar usuários, partidas e resultados
 - ✅ Base extensível para: partidas, palpites, grupos, ranking e pontuação
 
+---
+
 ## 🏗️ Arquitetura Utilizada
 
 O projeto segue o padrão **Clean Architecture** em camadas, com separação clara de responsabilidades e alta coesão.
@@ -22,10 +24,10 @@ O projeto segue o padrão **Clean Architecture** em camadas, com separação cla
 ### 📁 Camadas da Aplicação
 
 **1. Controller (Camada de Apresentação)**
-   - Expõe endpoints HTTP para APIs REST e renderiza páginas web
-   - Pacotes: `controller.api` (REST) e `controller.web` (web pages)
-   - Exemplo: `AutenticacaoApiController` - endpoints de login/cadastro
-   
+- Expõe endpoints HTTP para APIs REST e renderiza páginas web
+- Pacotes: `controller.api` (REST) e `controller.web` (web pages)
+- Exemplo: `AutenticacaoApiController` - endpoints de login/cadastro
+
    ```java
    @RestController
    @RequestMapping("/api/autenticacao")
@@ -39,10 +41,10 @@ O projeto segue o padrão **Clean Architecture** em camadas, com separação cla
    ```
 
 **2. Service (Camada de Lógica de Negócio)**
-   - Implementa regras de negócio e orquestra operações
-   - Valida dados, aplica regras e coordena persistência
-   - Exemplo: `UsuarioService` e `AutenticacaoService`
-   
+- Implementa regras de negócio e orquestra operações
+- Valida dados, aplica regras e coordena persistência
+- Exemplo: `UsuarioService` e `AutenticacaoService`
+
    ```java
    @Service
    public class UsuarioService {
@@ -56,30 +58,32 @@ O projeto segue o padrão **Clean Architecture** em camadas, com separação cla
    ```
 
 **3. Repository (Camada de Persistência)**
-   - Abstrai acesso ao banco de dados via **Spring Data JPA**
-   - Utiliza **Hibernate** como ORM
-   - Exemplo: `UsuarioRepository extends JpaRepository<Usuario, Long>`
+- Abstrai acesso ao banco de dados via **Spring Data JPA**
+- Utiliza **Hibernate** como ORM
+- Exemplo: `UsuarioRepository extends JpaRepository<Usuario, Long>`
 
 **4. Model (Entidades de Persistência)**
-   - Representa as tabelas do banco de dados
-   - Anotadas com `@Entity` e `@Table`
-   - Exemplo: `Usuario`, `Perfil`, `Partida` (futura)
+- Representa as tabelas do banco de dados
+- Anotadas com `@Entity` e `@Table`
+- Exemplo: `Usuario`, `Perfil`, `Partida` (futura)
 
 **5. DTO (Data Transfer Objects)**
-   - Objetos para entrada/saída de dados
-   - Validados com **Jakarta Validation** (`@NotBlank`, `@Email`, etc.)
-   - Separam a API das entidades internas
-   - Exemplo: `RequisicaoCadastro`, `RequisicaoLogin`, `RespostaAutenticacao`
+- Objetos para entrada/saída de dados
+- Validados com **Jakarta Validation** (`@NotBlank`, `@Email`, etc.)
+- Separam a API das entidades internas
+- Exemplo: `RequisicaoCadastro`, `RequisicaoLogin`, `RespostaAutenticacao`
 
 **6. Config (Configurações do Spring)**
-   - `ConfiguracaoSeguranca.java` - Spring Security com JWT
-   - `DatabaseSeeder.java` - Popula dados iniciais (usuário admin + teste)
-   - Beans customizados: `PasswordEncoder`, `JwtTokenProvider`
+- `ConfiguracaoSeguranca.java` - Spring Security com JWT
+- `DatabaseSeeder.java` - Popula dados iniciais (usuário admin + teste)
+- Beans customizados: `PasswordEncoder`, `JwtTokenProvider`
 
 **7. Exception (Tratamento de Erros)**
-   - `ManipuladorGlobalErros` - Handler centralizado via `@ControllerAdvice`
-   - `RegraNegocioException` - Exceções de domínio
-   - Conversão automática para HTTP apropriados (400, 422, 500, etc.)
+- `ManipuladorGlobalErros` - Handler centralizado via `@ControllerAdvice`
+- `RegraNegocioException` - Exceções de domínio
+- Conversão automática para HTTP apropriados (400, 422, 500, etc.)
+
+---
 
 ## 🛠️ Tecnologias Utilizadas
 
@@ -101,26 +105,30 @@ O projeto segue o padrão **Clean Architecture** em camadas, com separação cla
 
 > 💡 **Nota**: Versões exatas das dependências podem ser consultadas em `pom.xml`
 
+---
+
 ## 📦 Requisitos de Instalação
 
 - **Java 21** (JDK - Java Development Kit)
   - Verifique: `java -version`
   - Download: https://adoptium.net/ ou https://www.oracle.com/java/technologies/downloads/
-  
+
 - **Maven 3.8+**
   - Verifique: `mvn -version`
   - Download: https://maven.apache.org/download.cgi
-  
+
 - **MySQL 8.0+**
   - Verifique: `mysql --version`
   - Download: https://dev.mysql.com/downloads/mysql/
-  
+
 - **Git** (opcional, para clonar repositórios)
 
-- **IDE Recomendada**: 
+- **IDE Recomendada**:
   - IntelliJ IDEA Ultimate/Community
   - Visual Studio Code com extensões Java
   - Eclipse IDE
+
+---
 
 ## ⚙️ Configuração do Ambiente
 
@@ -169,6 +177,8 @@ java -version
 mvn -version
 mysql -u root -p -e "SELECT VERSION();"
 ```
+
+---
 
 ## 🚀 Como Executar o Projeto
 
@@ -233,12 +243,14 @@ mvn test jacoco:report
 ### Acessar a Aplicação
 
 - **Frontend Web**: http://localhost:8080
-- **Login Padrão**: 
+- **Login Padrão**:
   - Email: `admin@example.com`
   - Senha: `admin123`
-  
+
 - **API REST**: http://localhost:8080/api
 - **Swagger/OpenAPI** (futuro): http://localhost:8080/swagger-ui.html
+
+---
 
 ## 📡 Endpoints da API REST
 
@@ -324,6 +336,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 | `/admin/nova-partida` | GET | ✅ ADMIN | Criar nova partida |
 | `/admin/lancar-resultado` | GET | ✅ ADMIN | Lançar resultado |
 
+---
+
 ## 🔐 Fluxo de Autenticação
 
 ```
@@ -361,6 +375,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 - **Secret**: `api.security.token.secret` (altere em produção!)
 - **Expiração**: 1 dia (86400 segundos)
 - **Gerador**: `JwtTokenProvider.java` ou configuração Spring Security
+
+---
 
 ## ⚠️ Tratamento de Exceções
 
@@ -401,6 +417,8 @@ O projeto implementa tratamento centralizado de erros via `@ControllerAdvice` (`
 }
 ```
 
+---
+
 ## 🔒 Segurança
 
 ### Configuração do Spring Security
@@ -440,31 +458,31 @@ public class ConfiguracaoSeguranca {
 ### Recursos de Segurança Implementados
 
 ✅ **Autenticação JWT**
-   - Tokens HS256 gerados pela Auth0 (`com.auth0:java-jwt:4.4.0`)
-   - Expiração configurável (padrão 24h)
-   - Claims: `usuarioId`, `email`, `roles`
+- Tokens HS256 gerados pela Auth0 (`com.auth0:java-jwt:4.4.0`)
+- Expiração configurável (padrão 24h)
+- Claims: `usuarioId`, `email`, `roles`
 
 ✅ **Hash de Senha**
-   - BCryptPasswordEncoder (Force Strength: 10)
-   - Senha nunca armazenada em plain text
-   - Validação com `BCrypt.matches(entrada, hash)`
+- BCryptPasswordEncoder (Force Strength: 10)
+- Senha nunca armazenada em plain text
+- Validação com `BCrypt.matches(entrada, hash)`
 
 ✅ **Controle de Acesso (RBAC)**
-   - **ROLE_USER**: Usuários normais (acesso ao dashboard)
-   - **ROLE_ADMIN**: Administradores (acesso ao painel admin)
+- **ROLE_USER**: Usuários normais (acesso ao dashboard)
+- **ROLE_ADMIN**: Administradores (acesso ao painel admin)
 
 ✅ **Proteção de Rota**
-   - Públicas: `/login`, `/api/autenticacao/**`, assets estáticos
-   - Autenticadas: `/dashboard`
-   - Admin: `/admin/**`
+- Públicas: `/login`, `/api/autenticacao/**`, assets estáticos
+- Autenticadas: `/dashboard`
+- Admin: `/admin/**`
 
 ✅ **CSRF Protection**
-   - Desativado para API REST (stateless)
-   - Ativado para Thymeleaf (form submissions)
+- Desativado para API REST (stateless)
+- Ativado para Thymeleaf (form submissions)
 
 ✅ **CORS** (Future)
-   - Configurável em `application.properties`
-   - Padrão: apenas localhost em desenvolvimento
+- Configurável em `application.properties`
+- Padrão: apenas localhost em desenvolvimento
 
 ### Secrets e Configuração Sensível
 
@@ -485,64 +503,161 @@ SPRING_DATASOURCE_USERNAME=seu_usuario
 - Nunca commitar `application.properties` com valores reais
 - Usar `.env.example` ou `.properties.example` para template
 
-## Estrutura de Pacotes
+---
 
-Árvore principal do projeto (resumida):
+## 📂 Estrutura do Projeto
 
 ```
-src/main/java/br/com/bolaocopa
-├── config
-│   ├── ConfiguracaoSeguranca.java
-│   └── DatabaseSeeder.java
-├── controller
-│   ├── api
-│   │   └── AutenticacaoApiController.java
-│   └── web
-│       └── AdminWebController.java
-├── dto
-│   ├── RequisicaoCadastro.java
-│   ├── RequisicaoLogin.java
-│   └── RespostaAutenticacao.java
-├── exception
-│   ├── ManipuladorGlobalErros.java
-│   └── RegraNegocioException.java
-├── model
-│   ├── Perfil.java
-│   └── Usuario.java
-├── repository
-│   └── UsuarioRepository.java
-├── seeder
-│   └── DatabaseSeeder.java
-├── service
-│   ├── AutenticacaoService.java
-   │   └── UsuarioService.java
-└── BolaoCopa2026Application.java
+src/main/java/br/com/bolaocopa/
+│
+├── BolaoCopa2026Application.java          # Classe principal (SpringBootApplication)
+│
+├── config/
+│   ├── ConfiguracaoSeguranca.java         # Spring Security + JWT + BCrypt
+│   ├── DatabaseSeeder.java                # CommandLineRunner para popular BD
+│   ├── JwtTokenProvider.java              # Provedor de tokens JWT
+│   └── WebConfig.java                     # Configurações web (CORS, etc)
+│
+├── controller/
+│   ├── api/
+│   │   ├── AutenticacaoApiController.java # POST /api/autenticacao/*
+│   │   └── UsuarioApiController.java      # GET/PUT /api/usuarios/*
+│   │
+│   └── web/
+│       ├── AdminWebController.java        # GET /admin/*
+│       └── LoginWebController.java        # GET /login, /dashboard
+│
+├── dto/                                   # Data Transfer Objects
+│   ├── RequisicaoCadastro.java            # @NotBlank nome, @Email email, @Size(min=6) senha
+│   ├── RequisicaoLogin.java               # @Email email, @NotBlank senha
+│   ├── RespostaAutenticacao.java          # token, tipoToken, usuarioId, nome, perfil
+│   └── UsuarioDTO.java                    # Resposta GET /api/usuarios/{id}
+│
+├── exception/                             # Tratamento centralizado de erros
+│   ├── RegraNegocioException.java         # Exception customizada (HTTP 422)
+│   ├── RecursoNaoEncontradoException.java # Exception customizada (HTTP 404)
+│   └── ManipuladorGlobalErros.java        # @ControllerAdvice para mapear exceptions
+│
+├── model/                                 # Entidades JPA
+│   ├── Usuario.java                       # @Entity, @Table(name="usuarios")
+│   ├── Perfil.java                        # Enum: USER, ADMIN
+│   ├── Partida.java                       # @Entity (futura)
+│   └── Palpite.java                       # @Entity (futura)
+│
+├── repository/                            # Spring Data JPA
+│   ├── UsuarioRepository.java             # JpaRepository<Usuario, Long>
+│   ├── PartidaRepository.java             # JpaRepository<Partida, Long> (futura)
+│   └── PalpiteRepository.java             # JpaRepository<Palpite, Long> (futura)
+│
+└── service/                               # Lógica de negócio
+    ├── UsuarioService.java                # Cadastro, validações, busca
+    ├── AutenticacaoService.java           # Login, geração de token JWT
+    ├── PartidaService.java                # Gerenciar partidas (futura)
+    └── PalpiteService.java                # Processar palpites (futura)
+
+src/main/resources/
+├── application.properties                 # Configurações de ambiente
+├── application-dev.properties             # Profile: desenvolvimento
+├── application-prod.properties            # Profile: produção
+│
+├── templates/                             # Thymeleaf
+│   ├── login.html                         # Formulário de login
+│   ├── dashboard.html                     # Dashboard do usuário
+│   │
+│   ├── admin/
+│   │   ├── usuarios.html                  # Listar/editar usuários
+│   │   ├── novo-usuario.html              # Criar novo usuário
+│   │   ├── editar-usuario.html            # Editar usuário
+│   │   ├── partidas.html                  # Listar partidas
+│   │   ├── nova-partida.html              # Criar partida
+│   │   ├── lancar-resultado.html          # Registrar resultado
+│   │   └── selecoes.html                  # Gerenciar seleções
+│   │
+│   ├── error/
+│   │   ├── 400.html                       # Bad Request
+│   │   ├── 403.html                       # Forbidden
+│   │   ├── 404.html                       # Not Found
+│   │   └── 500.html                       # Internal Server Error
+│   │
+│   └── fragments/
+│       └── layout.html                    # Layout base (header, footer, navbar)
+│
+└── static/                                # Arquivos estáticos
+    ├── css/
+    │   └── style.css                      # Estilos customizados
+    ├── js/
+    │   └── app.js                         # JavaScript do frontend
+    └── uploads/                           # Diretório para upload de imagens
 ```
 
-## Boas Práticas Utilizadas
+---
 
-- DTO Pattern para separar entrada/saída da API das entidades persistentes.
-- Service Layer Pattern para isolar regras de negócio.
-- Repository Pattern (Spring Data JPA) para abstração de persistência.
-- Separation of Concerns entre camadas.
-- Validação com Jakarta Validation para garantias de integridade na entrada.
-- Tratamento centralizado de exceções via `@ControllerAdvice`.
-- Uso de `PasswordEncoder` (BCrypt) para segurança de senhas.
+## ✨ Boas Práticas Implementadas
 
-## Melhorias Futuras
+- ✅ **DTO Pattern**: Separa entrada/saída da API das entidades persistentes
+- ✅ **Service Layer Pattern**: Isola regras de negócio em camada dedicada
+- ✅ **Repository Pattern**: Abstração de persistência com Spring Data JPA
+- ✅ **Separation of Concerns**: Cada camada com responsabilidade bem definida
+- ✅ **Validação em Múltiplas Camadas**: DTOs (Bean Validation) + Service (regras negócio)
+- ✅ **Tratamento Centralizado de Erros**: `@ControllerAdvice` para conversão de exceptions
+- ✅ **Segurança Robusta**: BCrypt + JWT + RBAC (Role-Based Access Control)
+- ✅ **Configuração por Profile**: `application-dev.properties`, `application-prod.properties`
+- ✅ **Logging Estruturado**: Via SLF4J + Logback
+- ✅ **Documentação de Código**: Comments explicativos e README completo
 
-- Implementar JWT real com expiração e refresh tokens.
-- Adicionar endpoints para gerenciamento de partidas e resultados.
-- Implementar sistema de palpites por partida e cálculo automático de pontuação.
-- Controles detalhados de grupos de bolão (convites, permissões privadas/públicas).
-- Painel administrativo avançado para gerenciar usuários, partidas e resultados.
+---
 
-## Autor
+## 🚀 Melhorias Futuras (Roadmap)
+
+| Fase | Feature | Status | Prioridade |
+|---|---|---|---|
+| **MVP** | Autenticação JWT | ✅ Completo | P0 |
+| **MVP** | Gerenciar Usuários | ✅ Completo | P0 |
+| **V1.0** | CRUD Partidas | ⏳ Planejado | P1 |
+| **V1.0** | CRUD Seleções | ⏳ Planejado | P1 |
+| **V1.1** | Sistema de Palpites | ⏳ Planejado | P2 |
+| **V1.1** | Cálculo de Pontuação | ⏳ Planejado | P2 |
+| **V1.2** | Ranking/Leaderboard | ⏳ Planejado | P2 |
+| **V1.2** | Grupos de Bolão | ⏳ Planejado | P2 |
+| **V2.0** | Notificações (Email/SMS) | ⏳ Planejado | P3 |
+| **V2.0** | Relatórios Estatísticos | ⏳ Planejado | P3 |
+| **V2.0** | Mobile App (React Native) | ⏳ Planejado | P3 |
+| **V2.0** | OpenAPI/Swagger Docs | ⏳ Planejado | P3 |
+
+---
+
+## 📚 Referências e Recursos
+
+- [Spring Boot Documentation](https://spring.io/projects/spring-boot)
+- [Spring Security Documentation](https://spring.io/projects/spring-security)
+- [JWT (Auth0) Documentation](https://auth0.com/docs)
+- [Thymeleaf Documentation](https://www.thymeleaf.org/documentation.html)
+- [Jakarta Bean Validation](https://jakarta.ee/specifications/bean-validation/)
+- [MySQL Documentation](https://dev.mysql.com/doc/)
+
+---
+
+## 👨‍💼 Autor
 
 Felipe Pestana
 
 ---
 
-Se precisar, posso também gerar documentação OpenAPI/Swagger automaticamente, criar endpoints adicionais para partidas/palpites ou migrar o placeholder de token para JWT real. Deseja que eu gere um arquivo OpenAPI (swagger) para o projeto agora?
+## 📝 Licença
 
+Este projeto está licenciado sob a [MIT License](LICENSE).
+
+---
+
+## 💬 Suporte
+
+Se você encontrar bugs ou tiver sugestões de melhorias, abra uma **issue** no repositório.
+
+Para contribuir, faça um **fork**, crie uma branch para sua feature e envie um **pull request**.
+
+---
+
+**Última atualização**: 19 de junho de 2026
+
+**Status**: 🟢 Em desenvolvimento ativo
 
