@@ -1,5 +1,6 @@
 package br.com.bolaocopa.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,6 +30,7 @@ public class Usuario implements UserDetails {
     @Column(nullable = false, unique = true, length = 100)
     private String email;
 
+    @JsonIgnore
     @Column(nullable = false, length = 255)
     private String senha;
 
@@ -56,38 +58,33 @@ public class Usuario implements UserDetails {
         this.criadoEm = LocalDateTime.now();
     }
 
+    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + this.perfil.name()));
     }
 
+    @JsonIgnore
     @Override
-    public String getPassword() {
-        return this.senha;
-    }
+    public String getPassword() { return this.senha; }
 
+    @JsonIgnore
     @Override
-    public String getUsername() {
-        return this.email;
-    }
+    public String getUsername() { return this.email; }
 
+    @JsonIgnore
     @Override
-    public boolean isAccountNonExpired() {
-        return true; // Conta não expirada
-    }
+    public boolean isAccountNonExpired() { return true; }
 
+    @JsonIgnore
     @Override
-    public boolean isAccountNonLocked() {
-        return this.ativo; // Respeita o bloqueio feito pelo administrador (RF-046)
-    }
+    public boolean isAccountNonLocked() { return this.ativo; }
 
+    @JsonIgnore
     @Override
-    public boolean isCredentialsNonExpired() {
-        return true; // Credenciais não expiradas
-    }
+    public boolean isCredentialsNonExpired() { return true; }
 
+    @JsonIgnore
     @Override
-    public boolean isEnabled() {
-        return this.ativo; // Vincula ao status ativo/inativo do seu banco de dados
-    }
+    public boolean isEnabled() { return this.ativo; }
 }

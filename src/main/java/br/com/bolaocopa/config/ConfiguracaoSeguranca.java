@@ -38,11 +38,16 @@ public class ConfiguracaoSeguranca {
                         .requestMatchers("/css/**", "/js/**", "/imagens/**", "/favicon.ico").permitAll()
 
                         // Rotas públicas estruturais
-                        .requestMatchers("/", "/login", "/sair", "/error", "/api/autenticacao/**").permitAll()
+                        .requestMatchers("/", "/login", "/sair", "/error",
+                                "/api/autenticacao/cadastro", "/api/autenticacao/login",
+                                "/api/autenticacao/recuperar-senha", "/api/autenticacao/redefinir-senha").permitAll()
 
                         // Restrições de acesso por perfil
                         .requestMatchers("/dashboard").hasAnyRole("ADMIN", "USER")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/autenticacao/perfil", "/api/autenticacao/logout",
+                                "/api/autenticacao/conta", "/api/ranking/**",
+                                "/api/partidas/**", "/api/palpites/**", "/api/selecoes/**").authenticated()
 
                         .anyRequest().authenticated()
                 )

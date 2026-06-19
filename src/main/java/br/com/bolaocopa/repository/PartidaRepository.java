@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface PartidaRepository extends JpaRepository<Partida, Long> {
     List<Partida> findAllByOrderByDataHoraAsc();
+    long countByEncerradaFalse();
 }

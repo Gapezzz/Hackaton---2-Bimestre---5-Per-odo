@@ -1,8 +1,10 @@
 package br.com.bolaocopa.seeder;
 
 import br.com.bolaocopa.model.Perfil;
+import br.com.bolaocopa.model.Selecao;
 import br.com.bolaocopa.model.Usuario;
 import br.com.bolaocopa.model.Partida;
+import br.com.bolaocopa.repository.SelecaoRepository;
 import br.com.bolaocopa.repository.UsuarioRepository;
 import br.com.bolaocopa.repository.PartidaRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -16,18 +18,52 @@ public class DatabaseSeeder implements CommandLineRunner {
 
     private final UsuarioRepository usuarioRepository;
     private final PartidaRepository partidaRepository;
+    private final SelecaoRepository selecaoRepository;
     private final PasswordEncoder passwordEncoder;
 
     public DatabaseSeeder(UsuarioRepository usuarioRepository,
                           PartidaRepository partidaRepository,
+                          SelecaoRepository selecaoRepository,
                           PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.partidaRepository = partidaRepository;
+        this.selecaoRepository = selecaoRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public void run(String... args) throws Exception {
+
+        // Seed de Seleções (RF-041)
+        if (selecaoRepository.count() == 0) {
+            String[][] selecoes = {
+                {"Brasil",      "BRA", "https://flagcdn.com/w40/br.png", "G"},
+                {"Argentina",   "ARG", "https://flagcdn.com/w40/ar.png", "G"},
+                {"França",      "FRA", "https://flagcdn.com/w40/fr.png", "D"},
+                {"Alemanha",    "GER", "https://flagcdn.com/w40/de.png", "F"},
+                {"Espanha",     "ESP", "https://flagcdn.com/w40/es.png", "E"},
+                {"Portugal",    "POR", "https://flagcdn.com/w40/pt.png", "B"},
+                {"México",      "MEX", "https://flagcdn.com/w40/mx.png", "A"},
+                {"Estados Unidos","USA","https://flagcdn.com/w40/us.png","A"},
+                {"Canadá",      "CAN", "https://flagcdn.com/w40/ca.png", "B"},
+                {"Croácia",     "CRO", "https://flagcdn.com/w40/hr.png", "H"},
+                {"Holanda",     "NED", "https://flagcdn.com/w40/nl.png", "C"},
+                {"Inglaterra",  "ENG", "https://flagcdn.com/w40/gb-eng.png","C"},
+                {"Itália",      "ITA", "https://flagcdn.com/w40/it.png", "D"},
+                {"Bélgica",     "BEL", "https://flagcdn.com/w40/be.png", "E"},
+                {"Japão",       "JPN", "https://flagcdn.com/w40/jp.png", "F"},
+                {"Marrocos",    "MAR", "https://flagcdn.com/w40/ma.png", "H"}
+            };
+            for (String[] s : selecoes) {
+                Selecao sel = new Selecao();
+                sel.setNome(s[0]);
+                sel.setCodigoFifa(s[1]);
+                sel.setUrlBandeira(s[2]);
+                sel.setGrupo(s[3]);
+                selecaoRepository.save(sel);
+            }
+            System.out.println("✅ Seeder: 16 seleções inicializadas.");
+        }
 
         if (usuarioRepository.count() == 0) {
             Usuario admin = new Usuario();

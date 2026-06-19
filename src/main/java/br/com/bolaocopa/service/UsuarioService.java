@@ -1,6 +1,7 @@
 package br.com.bolaocopa.service;
 
 import br.com.bolaocopa.dto.RequisicaoCadastro;
+import br.com.bolaocopa.dto.RequisicaoEdicaoPerfil;
 import br.com.bolaocopa.dto.RequisicaoLogin;
 import br.com.bolaocopa.dto.RespostaAutenticacao;
 import br.com.bolaocopa.exception.RegraNegocioException;
@@ -97,6 +98,16 @@ public class UsuarioService {
     public void alternarStatus(Long id) {
         Usuario usuario = buscarPorId(id);
         usuario.setAtivo(!usuario.isAtivo());
+        usuarioRepository.save(usuario);
+    }
+
+    @Transactional
+    public void editarPerfil(Long id, RequisicaoEdicaoPerfil dados) {
+        Usuario usuario = buscarPorId(id);
+        usuario.setNome(dados.getNome());
+        if (dados.getFotoUrl() != null && !dados.getFotoUrl().isBlank()) {
+            usuario.setFotoUrl(dados.getFotoUrl());
+        }
         usuarioRepository.save(usuario);
     }
 

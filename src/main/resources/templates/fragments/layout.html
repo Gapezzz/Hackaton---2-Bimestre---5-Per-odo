@@ -22,17 +22,23 @@
 <nav th:fragment="navbar" class="nav-global">
     <a th:href="@{/dashboard}" class="nav-brand">🏆 Bolão Copa 2026</a>
 
-    <div class="nav-user-info" sec:authorize="isAuthenticated()">
-        <span>Olá, <strong sec:authentication="name">Usuário</strong></span>
+    <div style="display: flex; align-items: center; gap: 20px;">
+        <div sec:authorize="hasRole('ADMIN')" style="display: flex; gap: 10px;">
+            <a th:href="@{/admin/selecoes}" style="color: #a0aec0; text-decoration: none; font-size: 14px; font-weight: 500;">Seleções</a>
+            <a th:href="@{/admin/partidas}" style="color: #a0aec0; text-decoration: none; font-size: 14px; font-weight: 500;">Partidas</a>
+            <a th:href="@{/admin/usuarios}" style="color: #a0aec0; text-decoration: none; font-size: 14px; font-weight: 500;">Usuários</a>
+        </div>
 
-        <span class="badge-perfil">
+        <div class="nav-user-info" sec:authorize="isAuthenticated()">
+            <span>Olá, <strong sec:authentication="name">Usuário</strong></span>
+            <span class="badge-perfil">
                 <span sec:authorize="hasRole('ADMIN')">ADMIN</span>
                 <span sec:authorize="hasRole('USER')">USER</span>
             </span>
-
-        <form th:action="@{/sair}" method="POST" style="display: inline;">
-            <button type="submit" class="btn-logout">Sair</button>
-        </form>
+            <form th:action="@{/sair}" method="POST" style="display: inline;">
+                <button type="submit" class="btn-logout">Sair</button>
+            </form>
+        </div>
     </div>
 </nav>
 
