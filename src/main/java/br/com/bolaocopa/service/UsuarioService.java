@@ -8,6 +8,7 @@ import br.com.bolaocopa.exception.RegraNegocioException;
 import br.com.bolaocopa.model.Perfil;
 import br.com.bolaocopa.model.Usuario;
 import br.com.bolaocopa.repository.UsuarioRepository;
+import br.com.bolaocopa.security.JwtService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
