@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="pt-br">
+<head th:fragment="head-comum(titulo)">
+    <meta charset="UTF-8">
+    <title th:text="${titulo} + ' - Bolão Copa 2026'">Bolão Copa 2026</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        /* Estilos do Layout Global */
+        .nav-global { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background-color: #2d3748; color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .nav-brand { font-size: 20px; font-weight: bold; text-decoration: none; color: white; }
+        .nav-user-info { display: flex; align-items: center; gap: 15px; }
+        .badge-perfil { background: #4a5568; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        .btn-logout { background-color: #e53e3e; color: white; cursor: pointer; padding: 6px 12px; border: none; border-radius: 4px; font-weight: bold; transition: background 0.2s; }
+        .btn-logout:hover { background-color: #c53030; }
+        .footer-global { text-align: center; padding: 20px; background-color: #edf2f7; color: #718096; font-size: 14px; border-top: 1px solid #e2e8f0; position: fixed; bottom: 0; width: 100%; box-sizing: border-box; }
+    </style>
+</head>
+<body>
+
+<nav th:fragment="navbar" class="nav-global">
+    <a th:href="@{/dashboard}" class="nav-brand">🏆 Bolão Copa 2026</a>
+
+    <div style="display: flex; align-items: center; gap: 20px;">
+        <div sec:authorize="hasRole('ADMIN')" style="display: flex; gap: 10px;">
+            <a th:href="@{/admin/selecoes}" style="color: #a0aec0; text-decoration: none; font-size: 14px; font-weight: 500;">Seleções</a>
+            <a th:href="@{/admin/partidas}" style="color: #a0aec0; text-decoration: none; font-size: 14px; font-weight: 500;">Partidas</a>
+            <a th:href="@{/admin/usuarios}" style="color: #a0aec0; text-decoration: none; font-size: 14px; font-weight: 500;">Usuários</a>
+        </div>
+
+        <div class="nav-user-info" sec:authorize="isAuthenticated()">
+            <span>Olá, <strong sec:authentication="name">Usuário</strong></span>
+            <span class="badge-perfil">
+                <span sec:authorize="hasRole('ADMIN')">ADMIN</span>
+                <span sec:authorize="hasRole('USER')">USER</span>
+            </span>
+            <form th:action="@{/sair}" method="POST" style="display: inline;">
+                <button type="submit" class="btn-logout">Sair</button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<footer th:fragment="footer" class="footer-global">
+    <p>© 2026 Hackaton - Curso Superior de Tecnologias em Sistemas para Internet (UniALFA)</p>
+</footer>
+
+</body>
+</html>

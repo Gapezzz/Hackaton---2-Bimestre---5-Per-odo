@@ -1,17 +1,24 @@
 package br.com.bolaocopa.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "usuarios")
-public class Usuario {
+public class Usuario implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,6 +30,7 @@ public class Usuario {
     @Column(nullable = false, unique = true, length = 100)
     private String email;
 
+    @JsonIgnore
     @Column(nullable = false, length = 255)
     private String senha;
 
@@ -49,4 +57,34 @@ public class Usuario {
     protected void onCreate() {
         this.criadoEm = LocalDateTime.now();
     }
+
+    @JsonIgnore
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + this.perfil.name()));
+    }
+
+    @JsonIgnore
+    @Override
+    public String getPassword() { return this.senha; }
+
+    @JsonIgnore
+    @Override
+    public String getUsername() { return this.email; }
+
+    @JsonIgnore
+    @Override
+    public boolean isAccountNonExpired() { return true; }
+
+    @JsonIgnore
+    @Override
+    public boolean isAccountNonLocked() { return this.ativo; }
+
+    @JsonIgnore
+    @Override
+    public boolean isCredentialsNonExpired() { return true; }
+
+    @JsonIgnore
+    @Override
+    public boolean isEnabled() { return this.ativo; }
 }

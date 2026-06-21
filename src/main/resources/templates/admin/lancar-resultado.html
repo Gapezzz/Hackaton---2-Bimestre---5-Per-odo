@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+<head>
+    <div th:replace="~{fragments/layout :: head-comum('Lançar Placar')}"></div>
+</head>
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f7fafc; margin: 0; color: #2d3748; padding-bottom: 60px;">
+
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<main style="padding: 40px; max-width: 450px; margin: 0 auto;">
+    <h3 style="margin-top: 0; margin-bottom: 10px; text-align: center;">Inserir Resultado Final</h3>
+    <p style="text-align: center; color: #718096; margin-bottom: 25px; font-size: 14px;">O salvamento recalculará os rankings mobile instantaneamente.</p>
+
+    <form th:action="@{/admin/partidas/resultado/{id}(id=${partida.id})}" method="POST" style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0;">
+
+        <div style="display: flex; justify-content: space-between; align-items: center; background: #edf2f7; padding: 15px; border-radius: 6px; margin-bottom: 20px; font-weight: bold;">
+            <span th:text="${partida.mandante}"></span>
+            <span style="color: #718096; font-size: 12px;">VS</span>
+            <span th:text="${partida.visitante}"></span>
+        </div>
+
+        <div style="display: flex; gap: 20px; justify-content: center; align-items: center; margin-bottom: 25px;">
+            <div style="text-align: center;">
+                <label style="display: block; font-size: 12px; margin-bottom: 5px; font-weight: bold; color: #4a5568;">Gols Mandante</label>
+                <input type="number" name="golsMandante" min="0" required th:value="${partida.golsMandante}" style="width: 70px; text-align: center; padding: 10px; font-size: 18px; font-weight: bold; border: 1px solid #cbd5e0; border-radius: 4px;" />
+            </div>
+
+            <span style="font-size: 20px; font-weight: bold; margin-top: 15px;">x</span>
+
+            <div style="text-align: center;">
+                <label style="display: block; font-size: 12px; margin-bottom: 5px; font-weight: bold; color: #4a5568;">Gols Visitante</label>
+                <input type="number" name="golsVisitante" min="0" required th:value="${partida.golsVisitante}" style="width: 70px; text-align: center; padding: 10px; font-size: 18px; font-weight: bold; border: 1px solid #cbd5e0; border-radius: 4px;" />
+            </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <button type="submit" style="background-color: #3182ce; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 4px; font-weight: bold; font-size: 14px;">
+                Salvar e Encerrar Jogo
+            </button>
+            <a th:href="@{/admin/partidas}" style="color: #4a5568; text-decoration: none; font-size: 14px;">Voltar</a>
+        </div>
+    </form>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

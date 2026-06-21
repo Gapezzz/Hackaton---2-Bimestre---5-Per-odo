@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+<head>
+    <div th:replace="~{fragments/layout :: head-comum(${selecao.id != null} ? 'Editar Seleção' : 'Nova Seleção')}"></div>
+</head>
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f7fafc; margin: 0; color: #2d3748; padding-bottom: 60px;">
+
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<main style="padding: 40px; max-width: 500px; margin: 0 auto;">
+
+    <h3 style="margin-top: 0; margin-bottom: 20px; text-align: center;"
+        th:text="${selecao.id != null} ? 'Editar Seleção' : 'Cadastrar Nova Seleção'">
+        Nova Seleção
+    </h3>
+
+    <div th:if="${erro}" style="background: #fff5f5; border: 1px solid #fed7d7; color: #c53030; padding: 12px; border-radius: 4px; margin-bottom: 16px;"
+         th:text="${erro}"></div>
+
+    <form th:action="@{/admin/selecoes/salvar}" th:object="${selecao}" method="POST"
+          style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">
+
+        <input type="hidden" th:field="*{id}" />
+
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 6px;">Nome da Seleção:</label>
+            <input type="text" th:field="*{nome}" required placeholder="Ex: Brasil"
+                   style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 4px; box-sizing: border-box;" />
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 6px;">Código FIFA (3 letras):</label>
+            <input type="text" th:field="*{codigoFifa}" required maxlength="3" placeholder="Ex: BRA"
+                   style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 4px; text-transform: uppercase; box-sizing: border-box;" />
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 6px;">URL da Bandeira / Escudo:</label>
+            <input type="text" th:field="*{urlBandeira}" placeholder="Ex: https://flagcdn.com/w40/br.png"
+                   style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 4px; box-sizing: border-box;" />
+            <p style="font-size: 12px; color: #718096; margin: 4px 0 0 0;">Sugestão: use https://flagcdn.com/w40/XX.png substituindo XX pelo código ISO do país.</p>
+        </div>
+
+        <div style="margin-bottom: 25px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 6px;">Grupo:</label>
+            <select th:field="*{grupo}" style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 4px; background: white; box-sizing: border-box;">
+                <option value="">— Sem grupo (fase eliminatória) —</option>
+                <option value="A">Grupo A</option>
+                <option value="B">Grupo B</option>
+                <option value="C">Grupo C</option>
+                <option value="D">Grupo D</option>
+                <option value="E">Grupo E</option>
+                <option value="F">Grupo F</option>
+                <option value="G">Grupo G</option>
+                <option value="H">Grupo H</option>
+                <option value="I">Grupo I</option>
+                <option value="J">Grupo J</option>
+                <option value="K">Grupo K</option>
+                <option value="L">Grupo L</option>
+            </select>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <button type="submit"
+                    style="background-color: #38a169; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 4px; font-weight: bold;"
+                    th:text="${selecao.id != null} ? 'Salvar Alterações' : 'Cadastrar Seleção'">
+                Cadastrar Seleção
+            </button>
+            <a th:href="@{/admin/selecoes}" style="color: #4a5568; text-decoration: none; font-size: 14px;">Cancelar</a>
+        </div>
+    </form>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

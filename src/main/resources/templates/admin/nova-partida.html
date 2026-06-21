@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+<head>
+    <div th:replace="~{fragments/layout :: head-comum(${partida.id != null} ? 'Editar Partida' : 'Nova Partida')}"></div>
+</head>
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f7fafc; margin: 0; color: #2d3748; padding-bottom: 60px;">
+
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<main style="padding: 40px; max-width: 550px; margin: 0 auto;">
+
+    <h3 style="margin-top: 0; margin-bottom: 20px; text-align: center;"
+        th:text="${partida.id != null} ? 'Editar Dados da Partida' : 'Cadastrar Nova Partida'">
+        Cadastrar Nova Partida
+    </h3>
+
+    <form th:action="@{/admin/partidas/novo}" th:object="${partida}" method="POST" enctype="multipart/form-data" style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0;">
+
+        <input type="hidden" th:field="*{id}" />
+
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 6px;">Fase do Campeonato:</label>
+            <select th:field="*{fase}" style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 4px; background: white;">
+                <option value="Fase de Grupos">Fase de Grupos</option>
+                <option value="Oitavas de Final">Oitavas de Final</option>
+                <option value="Quartas de Final">Quartas de Final</option>
+                <option value="Semifinal">Semifinal</option>
+                <option value="Final">Final</option>
+            </select>
+        </div>
+
+        <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+            <div style="flex: 1;">
+                <label style="display: block; font-weight: bold; margin-bottom: 6px;">Seleção Mandante:</label>
+                <input type="text" th:field="*{mandante}" required placeholder="Ex: Brasil" style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 4px;" />
+            </div>
+            <div style="flex: 1;">
+                <label style="display: block; font-weight: bold; margin-bottom: 6px;">Seleção Visitante:</label>
+                <input type="text" th:field="*{visitante}" required placeholder="Ex: Alemanha" style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 4px;" />
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+            <div style="flex: 1;">
+                <label style="display: block; font-weight: bold; margin-bottom: 6px;">Bandeira (Mandante):</label>
+
+                <div th:if="${partida.fotoMandante != null}" style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px; background: #edf2f7; padding: 6px; border-radius: 4px;">
+                    <img th:src="${partida.fotoMandante}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;" />
+                    <span style="font-size: 11px; color: #4a5568;">Imagem salva ativa</span>
+                </div>
+
+                <input type="file" name="fileMandante" accept="image/*" style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 13px;" />
+            </div>
+
+            <div style="flex: 1;">
+                <label style="display: block; font-weight: bold; margin-bottom: 6px;">Bandeira (Visitante):</label>
+
+                <div th:if="${partida.fotoVisitante != null}" style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px; background: #edf2f7; padding: 6px; border-radius: 4px;">
+                    <img th:src="${partida.fotoVisitante}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;" />
+                    <span style="font-size: 11px; color: #4a5568;">Imagem salva ativa</span>
+                </div>
+
+                <input type="file" name="fileVisitante" accept="image/*" style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 13px;" />
+            </div>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 6px;">Data e Horário:</label>
+            <input type="datetime-local" th:field="*{dataHora}" required style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 4px;" />
+        </div>
+
+        <div style="margin-bottom: 25px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 6px;">Estádio / Arena:</label>
+            <input type="text" th:field="*{estadio}" required placeholder="Ex: Estádio Azteca" style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 4px;" />
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <button type="submit" style="background-color: #38a169; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 4px; font-weight: bold;"
+                    th:text="${partida.id != null} ? 'Salvar Alterações' : 'Agendar Partida'">
+                Agendar Partida
+            </button>
+            <a th:href="@{/admin/partidas}" style="color: #4a5568; text-decoration: none; font-size: 14px;">Cancelar</a>
+        </div>
+    </form>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

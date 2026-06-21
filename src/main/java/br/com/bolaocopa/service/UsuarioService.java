@@ -1,6 +1,7 @@
 package br.com.bolaocopa.service;
 
 import br.com.bolaocopa.dto.RequisicaoCadastro;
+import br.com.bolaocopa.dto.RequisicaoEdicaoPerfil;
 import br.com.bolaocopa.dto.RequisicaoLogin;
 import br.com.bolaocopa.dto.RespostaAutenticacao;
 import br.com.bolaocopa.exception.RegraNegocioException;
@@ -11,18 +12,19 @@ import br.com.bolaocopa.security.JwtService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
 
 @Service
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder criptografiaSenha;
-    private final JwtService jwtService;
+    private final TokenService tokenService;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder criptografiaSenha, JwtService jwtService) {
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder criptografiaSenha, TokenService tokenService) {
         this.usuarioRepository = usuarioRepository;
         this.criptografiaSenha = criptografiaSenha;
-        this.jwtService = jwtService;
+        this.tokenService = tokenService;
     }
 
     @Transactional
@@ -41,6 +43,16 @@ public class UsuarioService {
         usuarioRepository.save(novoUsuario);
     }
 
+    @Transactional
+    public void salvarNovoUsuarioAdmin(Usuario usuario) {
+        if (usuarioRepository.existsByEmail(usuario.getEmail())) {
+            throw new RegraNegocioException("O e-mail informado já está cadastrado.");
+        }
+        usuario.setSenha(criptografiaSenha.encode(usuario.getSenha()));
+        usuario.setAtivo(true);
+        usuarioRepository.save(usuario);
+    }
+
     public RespostaAutenticacao autenticarUsuario(RequisicaoLogin dados) {
         Usuario usuario = usuarioRepository.findByEmail(dados.getEmail())
                 .orElseThrow(() -> new RegraNegocioException("E-mail ou senha inválidos."));
@@ -53,14 +65,56 @@ public class UsuarioService {
             throw new RegraNegocioException("E-mail ou senha inválidos.");
         }
 
-        String token = jwtService.gerarToken(usuario.getEmail(), usuario.getPerfil().name());
+        String tokenGerado = tokenService.gerarToken(usuario);
 
-        return new RespostaAutenticacao(
-                token,
-                "Bearer",
-                usuario.getId(),
-                usuario.getNome(),
-                usuario.getPerfil().name()
-        );
+        return new RespostaAutenticacao(tokenGerado, "Bearer", usuario.getId(), usuario.getNome(), usuario.getPerfil().name());
+    }
+
+    public List<Usuario> listarTodos() {
+        return usuarioRepository.findAll();
+    }
+
+    public Usuario buscarPorId(Long id) {
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new RegraNegocioException("Usuário não encontrado."));
+    }
+
+    @Transactional
+    public void atualizarDadosUsuario(Long id, Usuario dadosAtualizados) {
+        Usuario usuario = buscarPorId(id);
+
+        if (!usuario.getEmail().equalsIgnoreCase(dadosAtualizados.getEmail())) {
+            if (usuarioRepository.existsByEmail(dadosAtualizados.getEmail())) {
+                throw new RegraNegocioException("O e-mail informado já está sendo utilizado por outro usuário.");
+            }
+        }
+
+        usuario.setNome(dadosAtualizados.getNome());
+        usuario.setEmail(dadosAtualizados.getEmail());
+        usuario.setPerfil(dadosAtualizados.getPerfil());
+        usuarioRepository.save(usuario);
+    }
+
+    @Transactional
+    public void alternarStatus(Long id) {
+        Usuario usuario = buscarPorId(id);
+        usuario.setAtivo(!usuario.isAtivo());
+        usuarioRepository.save(usuario);
+    }
+
+    @Transactional
+    public void editarPerfil(Long id, RequisicaoEdicaoPerfil dados) {
+        Usuario usuario = buscarPorId(id);
+        usuario.setNome(dados.getNome());
+        if (dados.getFotoUrl() != null && !dados.getFotoUrl().isBlank()) {
+            usuario.setFotoUrl(dados.getFotoUrl());
+        }
+        usuarioRepository.save(usuario);
+    }
+
+    @Transactional
+    public void excluirUsuario(Long id) {
+        Usuario usuario = buscarPorId(id);
+        usuarioRepository.delete(usuario);
     }
 }

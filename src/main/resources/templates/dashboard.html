@@ -1,34 +1,179 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <title>Dashboard - Bolão Copa 2026</title>
+    <div th:replace="~{fragments/layout :: head-comum('Dashboard')}"></div>
 </head>
-<body>
-<header>
-    <h1>🏆 Painel do Bolão Copa 2026</h1>
-    <div>
-        <span>Usuário: <strong th:text="${#authentication.name}">...</strong></span> |
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f7fafc; margin: 0; color: #2d3748; padding-bottom: 80px;">
 
-        <span>Perfil: <span th:text="${#authentication.authorities}">...</span></span>
+<div th:replace="~{fragments/layout :: navbar}"></div>
 
-        <form th:action="@{/sair}" method="POST" style="display: inline; margin-left: 20px;">
-            <button type="submit" style="background-color: #ff4d4d; color: white; cursor: pointer;">Sair / Logout</button>
-        </form>
-    </div>
-</header>
+<main style="padding: 30px; max-width: 1200px; margin: 0 auto;">
 
-<main>
-    <h3>Bem-vindo ao sistema de palpites!</h3>
-    <p>Aqui você poderá listar os jogos e dar seus lances.</p>
-
-    <div sec:authorize="hasAuthority('ROLE_ADMIN')" style="background: #ffcccc; padding: 10px; margin: 10px 0;">
-        ⚠️ <strong>Área do Administrador:</strong> Este bloco só aparece para quem é ADMIN.
+    <div style="margin-bottom: 25px;">
+        <h2 style="margin: 0; font-size: 24px; color: #2d3748;">Painel do Bolão Copa 2026</h2>
+        <p style="margin: 5px 0 0 0; color: #718096;">Acompanhe os indicadores e gerencie as rodadas do campeonato.</p>
     </div>
 
-    <div id="listaJogos"></div>
+    <!-- RF-047: Indicadores do Dashboard -->
+    <div sec:authorize="hasRole('ADMIN')" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 30px;">
+
+        <div style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.04); border-left: 4px solid #3182ce;">
+            <p style="margin: 0 0 4px 0; font-size: 13px; color: #718096; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Total de Usuários</p>
+            <p style="margin: 0; font-size: 32px; font-weight: bold; color: #3182ce;" th:text="${totalUsuarios}">0</p>
+        </div>
+
+        <div style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.04); border-left: 4px solid #38a169;">
+            <p style="margin: 0 0 4px 0; font-size: 13px; color: #718096; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Total de Palpites</p>
+            <p style="margin: 0; font-size: 32px; font-weight: bold; color: #38a169;" th:text="${totalPalpites}">0</p>
+        </div>
+
+        <div style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.04); border-left: 4px solid #dd6b20;">
+            <p style="margin: 0 0 4px 0; font-size: 13px; color: #718096; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Partidas Pendentes</p>
+            <p style="margin: 0; font-size: 32px; font-weight: bold; color: #dd6b20;" th:text="${partidasPendentes}">0</p>
+        </div>
+
+        <div style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.04); border-left: 4px solid #805ad5;">
+            <p style="margin: 0 0 4px 0; font-size: 13px; color: #718096; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Ativos (últimas 24h)</p>
+            <p style="margin: 0; font-size: 32px; font-weight: bold; color: #805ad5;" th:text="${usuariosAtivos24h}">0</p>
+        </div>
+    </div>
+
+    <!-- Atalhos admin -->
+    <div sec:authorize="hasRole('ADMIN')" style="background: #fff5f5; padding: 20px; border: 1px solid #fed7d7; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+        <div>
+            <strong style="color: #c53030;">Área do Administrador:</strong> Gerencie partidas, seleções e usuários do bolão.
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <a th:href="@{/admin/selecoes}"
+               style="background-color: #805ad5; color: white; padding: 10px 18px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 13px;">
+                Seleções
+            </a>
+            <a th:href="@{/admin/partidas}"
+               style="background-color: #3182ce; color: white; padding: 10px 18px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 13px;">
+                Partidas
+            </a>
+            <a th:href="@{/admin/usuarios}"
+               style="background-color: #2d3748; color: white; padding: 10px 18px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 13px;">
+                Usuários
+            </a>
+        </div>
+    </div>
+
+    <!-- RF-013: Próximas partidas em destaque -->
+    <div style="background: white; padding: 25px; border-radius: 8px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 25px;">
+        <h4 style="margin-top: 0; margin-bottom: 5px; font-size: 18px; color: #4a5568; border-bottom: 2px solid #edf2f7; padding-bottom: 10px;">
+            ⏰ Próximas Partidas — Aberto para Palpites
+        </h4>
+        <p style="font-size: 13px; color: #718096; margin: 0 0 15px 0;">Você ainda pode palpitar nestas partidas:</p>
+        <div id="proximasPartidas">
+            <p style="color: #718096; margin: 0;">Carregando...</p>
+        </div>
+    </div>
+
+    <!-- RF-010: Todas as partidas -->
+    <div style="background: white; padding: 25px; border-radius: 8px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+        <h4 style="margin-top: 0; margin-bottom: 15px; font-size: 18px; color: #4a5568; border-bottom: 2px solid #edf2f7; padding-bottom: 10px;">
+            📋 Calendário Completo
+        </h4>
+        <div id="listaJogos">
+            <p style="color: #718096; margin: 0;">Carregando partidas...</p>
+        </div>
+    </div>
+
 </main>
 
+<div th:replace="~{fragments/layout :: footer}"></div>
+
+<script>
+    // RF-013: Próximas partidas abertas para palpite
+    async function carregarProximas() {
+        const div = document.getElementById('proximasPartidas');
+        try {
+            const resp = await fetch('/api/partidas/proximas', { credentials: 'include' });
+            if (resp.ok) {
+                const jogos = await resp.json();
+                if (!jogos || jogos.length === 0) {
+                    div.innerHTML = '<p style="color: #718096; margin: 0;">Nenhuma partida aberta para palpites no momento.</p>';
+                    return;
+                }
+                let html = '<div style="display: flex; gap: 12px; flex-wrap: wrap;">';
+                jogos.forEach(j => {
+                    const data = j.dataHora ? new Date(j.dataHora).toLocaleString('pt-BR', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
+                    const imgM = j.fotoMandante || 'https://placehold.co/28x19/cbd5e0/fff?text=M';
+                    const imgV = j.fotoVisitante || 'https://placehold.co/28x19/cbd5e0/fff?text=V';
+                    html += `
+                        <div style="background: #ebf8ff; border: 1px solid #bee3f8; border-radius: 8px; padding: 14px 18px; min-width: 200px;">
+                            <div style="display: flex; align-items: center; gap: 8px; font-weight: bold; font-size: 14px;">
+                                <img src="${imgM}" style="width:28px;height:19px;object-fit:cover;border-radius:2px;" />
+                                <span>${j.mandante}</span>
+                                <span style="color:#a0aec0;font-weight:normal;">vs</span>
+                                <span>${j.visitante}</span>
+                                <img src="${imgV}" style="width:28px;height:19px;object-fit:cover;border-radius:2px;" />
+                            </div>
+                            <p style="margin: 6px 0 0 0; font-size: 12px; color: #4a5568;">📅 ${data}</p>
+                            <p style="margin: 2px 0 0 0; font-size: 12px; color: #4a5568;">🏟️ ${j.estadio}</p>
+                        </div>`;
+                });
+                html += '</div>';
+                div.innerHTML = html;
+            }
+        } catch(e) {
+            div.innerHTML = '<p style="color:#e53e3e;">Erro ao carregar próximas partidas.</p>';
+        }
+    }
+
+    // RF-010: Calendário completo
+    async function carregarJogos() {
+        const div = document.getElementById('listaJogos');
+        try {
+            const resp = await fetch('/api/partidas', { credentials: 'include' });
+            if (resp.ok) {
+                const jogos = await resp.json();
+                if (!jogos || jogos.length === 0) {
+                    div.innerHTML = '<p style="color:#718096;margin:0;">Nenhuma partida disponível.</p>';
+                    return;
+                }
+                let html = `<table border="1" style="width:100%;border-collapse:collapse;background:white;text-align:left;border:1px solid #cbd5e0;">
+                    <thead><tr style="background-color:#e2e8f0;">
+                        <th style="padding:12px;border:1px solid #cbd5e0;">Fase</th>
+                        <th style="padding:12px;border:1px solid #cbd5e0;">Confronto</th>
+                        <th style="padding:12px;border:1px solid #cbd5e0;text-align:center;">Placar</th>
+                        <th style="padding:12px;border:1px solid #cbd5e0;">Data / Hora</th>
+                        <th style="padding:12px;border:1px solid #cbd5e0;">Estádio</th>
+                    </tr></thead><tbody>`;
+                jogos.forEach(j => {
+                    const data = j.dataHora ? new Date(j.dataHora).toLocaleString('pt-BR', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
+                    const placar = j.encerrada
+                        ? `<span style="background:#e2e8f0;padding:3px 8px;border-radius:4px;font-weight:bold;">${j.golsMandante} x ${j.golsVisitante}</span>`
+                        : `<span style="background:#feebc8;color:#c05621;padding:3px 8px;border-radius:4px;font-size:12px;">Agendado</span>`;
+                    const imgM = j.fotoMandante || 'https://placehold.co/24x16/cbd5e0/fff?text=M';
+                    const imgV = j.fotoVisitante || 'https://placehold.co/24x16/cbd5e0/fff?text=V';
+                    html += `<tr style="border-bottom:1px solid #e2e8f0;">
+                        <td style="padding:12px;border:1px solid #cbd5e0;">${j.fase}</td>
+                        <td style="padding:12px;border:1px solid #cbd5e0;font-weight:500;">
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <img src="${imgM}" style="width:24px;height:16px;object-fit:cover;border-radius:2px;" />
+                                ${j.mandante} <span style="color:#a0aec0;">vs</span> ${j.visitante}
+                                <img src="${imgV}" style="width:24px;height:16px;object-fit:cover;border-radius:2px;" />
+                            </div>
+                        </td>
+                        <td style="padding:12px;border:1px solid #cbd5e0;text-align:center;">${placar}</td>
+                        <td style="padding:12px;border:1px solid #cbd5e0;">${data}</td>
+                        <td style="padding:12px;border:1px solid #cbd5e0;">${j.estadio}</td>
+                    </tr>`;
+                });
+                html += '</tbody></table>';
+                div.innerHTML = html;
+            }
+        } catch(e) {
+            div.innerHTML = '<p style="color:#e53e3e;">Erro ao carregar partidas.</p>';
+        }
+    }
+
+    carregarProximas();
+    carregarJogos();
+</script>
 </body>
 </html>
