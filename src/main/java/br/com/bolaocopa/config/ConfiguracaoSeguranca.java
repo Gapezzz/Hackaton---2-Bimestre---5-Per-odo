@@ -35,7 +35,6 @@ public class ConfiguracaoSeguranca {
     }
 
     @Bean
-    @Order(2)
     public SecurityFilterChain webFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(Customizer.withDefaults())
