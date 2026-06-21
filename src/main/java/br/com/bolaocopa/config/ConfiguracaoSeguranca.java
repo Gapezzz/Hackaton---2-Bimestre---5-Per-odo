@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -15,6 +16,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -31,24 +37,19 @@ public class ConfiguracaoSeguranca {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Assets estáticos liberados via HttpSecurity (Boa prática recomendada pelo Spring)
                         .requestMatchers("/css/**", "/js/**", "/imagens/**", "/favicon.ico").permitAll()
-
-                        // Rotas públicas estruturais
                         .requestMatchers("/", "/login", "/sair", "/error",
                                 "/api/autenticacao/cadastro", "/api/autenticacao/login",
                                 "/api/autenticacao/recuperar-senha", "/api/autenticacao/redefinir-senha").permitAll()
-
-                        // Restrições de acesso por perfil
                         .requestMatchers("/dashboard").hasAnyRole("ADMIN", "USER")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/autenticacao/perfil", "/api/autenticacao/logout",
                                 "/api/autenticacao/conta", "/api/ranking/**",
                                 "/api/partidas/**", "/api/palpites/**", "/api/selecoes/**").authenticated()
-
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -61,7 +62,7 @@ public class ConfiguracaoSeguranca {
                             Cookie cookie = new Cookie("TOKEN_BOLAOMC", tokenJWT);
                             cookie.setHttpOnly(true);
                             cookie.setPath("/");
-                            cookie.setMaxAge(7200); // 2 horas
+                            cookie.setMaxAge(7200);
                             response.addCookie(cookie);
 
                             response.sendRedirect("/dashboard");
@@ -84,6 +85,19 @@ public class ConfiguracaoSeguranca {
                 .addFilterBefore(filtroSeguranca, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOriginPatterns(List.of("*"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 
     @Bean
