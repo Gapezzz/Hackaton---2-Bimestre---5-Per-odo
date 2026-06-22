@@ -3,16 +3,27 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-
 import { useAuth } from '../context/AuthContext';
-
+import { colors } from '../theme';
 import LoginScreen from '../screens/LoginScreen';
 import CadastroScreen from '../screens/CadastroScreen';
 import PerfilScreen from '../screens/PerfilScreen';
-import PlaceholderScreen from '../screens/PlaceholderScreen';
+import HomeScreen from '../screens/HomeScreen';
+import PartidasScreen from '../screens/PartidasScreen';
+import DetalhesPartidaScreen from '../screens/DetalhesPartidaScreen';
+import RegistrarPalpiteScreen from '../screens/RegistrarPalpiteScreen';
+import MeusPalpitesScreen from '../screens/MeusPalpitesScreen';
+import RankingScreen from '../screens/RankingScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+
+const stackOptions = {
+  headerStyle: { backgroundColor: colors.background },
+  headerTintColor: colors.primary,
+  headerTitleStyle: { fontWeight: '800' },
+  contentStyle: { backgroundColor: colors.background },
+};
 
 function AuthStack() {
   return (
@@ -23,42 +34,82 @@ function AuthStack() {
   );
 }
 
+function PartidasStack() {
+  return (
+    <Stack.Navigator screenOptions={stackOptions}>
+      <Stack.Screen name="ListaPartidas" component={PartidasScreen} options={{ title: 'Partidas' }} />
+      <Stack.Screen name="DetalhesPartida" component={DetalhesPartidaScreen} options={{ title: 'Detalhes da partida' }} />
+      <Stack.Screen name="RegistrarPalpite" component={RegistrarPalpiteScreen} options={{ title: 'Registrar palpite' }} />
+    </Stack.Navigator>
+  );
+}
+
+function PalpitesStack() {
+  return (
+    <Stack.Navigator screenOptions={stackOptions}>
+      <Stack.Screen name="ListaPalpites" component={MeusPalpitesScreen} options={{ title: 'Meus palpites' }} />
+      <Stack.Screen name="DetalhesPartida" component={DetalhesPartidaScreen} options={{ title: 'Detalhes da partida' }} />
+      <Stack.Screen name="RegistrarPalpite" component={RegistrarPalpiteScreen} options={{ title: 'Editar palpite' }} />
+    </Stack.Navigator>
+  );
+}
+
 function AppTabs() {
   return (
     <Tab.Navigator
       screenOptions={{
-        headerStyle: { backgroundColor: '#0A1628' },
-        headerTintColor: '#F0C040',
-        headerTitleStyle: { fontWeight: 'bold' },
-        tabBarStyle: { backgroundColor: '#0A1628', borderTopColor: '#1A2740' },
-        tabBarActiveTintColor: '#F0C040',
-        tabBarInactiveTintColor: '#6B7280',
+        headerStyle: { backgroundColor: colors.background },
+        headerTintColor: colors.primary,
+        headerTitleStyle: { fontWeight: '800' },
+        tabBarStyle: {
+          backgroundColor: colors.background,
+          borderTopColor: colors.border,
+          height: 64,
+          paddingBottom: 7,
+        },
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.muted,
       }}
     >
       <Tab.Screen
-        name="Início"
-        component={PlaceholderScreen}
-        options={{ tabBarIcon: ({ color }) => <FontAwesome name="home" size={24} color={color} /> }}
+        name="Home"
+        component={HomeScreen}
+        options={{
+          title: 'Home',
+          tabBarIcon: ({ color }) => <FontAwesome name="home" size={23} color={color} />,
+        }}
       />
       <Tab.Screen
-        name="Partidas"
-        component={PlaceholderScreen}
-        options={{ tabBarIcon: ({ color }) => <FontAwesome name="futbol-o" size={22} color={color} /> }}
+        name="PartidasTab"
+        component={PartidasStack}
+        options={{
+          title: 'Partidas',
+          headerShown: false,
+          tabBarIcon: ({ color }) => <FontAwesome name="futbol-o" size={21} color={color} />,
+        }}
       />
       <Tab.Screen
-        name="Palpites"
-        component={PlaceholderScreen}
-        options={{ tabBarIcon: ({ color }) => <FontAwesome name="pencil" size={22} color={color} /> }}
+        name="PalpitesTab"
+        component={PalpitesStack}
+        options={{
+          title: 'Palpites',
+          headerShown: false,
+          tabBarIcon: ({ color }) => <FontAwesome name="pencil" size={21} color={color} />,
+        }}
       />
       <Tab.Screen
         name="Ranking"
-        component={PlaceholderScreen}
-        options={{ tabBarIcon: ({ color }) => <FontAwesome name="trophy" size={22} color={color} /> }}
+        component={RankingScreen}
+        options={{
+          tabBarIcon: ({ color }) => <FontAwesome name="trophy" size={21} color={color} />,
+        }}
       />
       <Tab.Screen
         name="Perfil"
         component={PerfilScreen}
-        options={{ tabBarIcon: ({ color }) => <FontAwesome name="user" size={24} color={color} /> }}
+        options={{
+          tabBarIcon: ({ color }) => <FontAwesome name="user" size={22} color={color} />,
+        }}
       />
     </Tab.Navigator>
   );
