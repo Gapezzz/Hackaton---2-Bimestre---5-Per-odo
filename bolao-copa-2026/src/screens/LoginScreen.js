@@ -29,14 +29,14 @@ export default function LoginScreen({ navigation }) {
     try {
       const { data } = await login(email.trim(), senha);
       salvarSessao({
-        id: data.id,
+        id: data.usuarioId ?? data.id,
         nome: data.nome,
         perfil: data.perfil,
         token: data.token,
       });
       // Navigator auto-switches to AppStack on session save
     } catch (err) {
-      const msg = err.response?.data?.message || "E-mail ou senha inválidos.";
+      const msg = err.response?.data?.message || err.message || "E-mail ou senha inválidos.";
       Alert.alert("Erro ao entrar", msg);
     } finally {
       setCarregando(false);
@@ -69,29 +69,6 @@ export default function LoginScreen({ navigation }) {
           value={senha}
           onChangeText={setSenha}
         />
-        <TouchableOpacity
-          onPress={async () => {
-            try {
-              const r = await fetch(
-                "http://192.168.18.6:8082/api/autenticacao/cadastro",
-                {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    nome: "Teste",
-                    email: "teste@teste.com",
-                    senha: "123456",
-                  }),
-                },
-              );
-              Alert.alert("status", String(r.status));
-            } catch (e) {
-              Alert.alert("erro", e.message);
-            }
-          }}
-        >
-          <Text style={{ color: "white", marginTop: 20 }}>testar conexão</Text>
-        </TouchableOpacity>
         <TouchableOpacity
           style={[styles.botao, carregando && styles.botaoDesabilitado]}
           onPress={handleLogin}
