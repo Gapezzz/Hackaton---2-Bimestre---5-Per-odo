@@ -1,4 +1,4 @@
-const BASE_URL = 'http://192.168.0.102:8080';
+export const BASE_URL = 'http://192.168.0.102:8080';
 
 const request = async (method, path, body = null) => {
   const headers = { 'Content-Type': 'application/json' };
@@ -73,3 +73,5 @@ export const listarRanking = (pagina = 0, tamanhoPagina = 50) =>
   request('GET', `/api/ranking${queryString({ pagina, tamanhoPagina })}`);
 export const buscarMinhaPosicao = () =>
   request('GET', '/api/ranking/minha-posicao');
+export const listarSelecoes = () =>
+  request('GET', '/api/selecoes');

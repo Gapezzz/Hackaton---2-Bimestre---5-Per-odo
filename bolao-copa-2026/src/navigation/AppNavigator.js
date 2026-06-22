@@ -14,6 +14,10 @@ import DetalhesPartidaScreen from '../screens/DetalhesPartidaScreen';
 import RegistrarPalpiteScreen from '../screens/RegistrarPalpiteScreen';
 import MeusPalpitesScreen from '../screens/MeusPalpitesScreen';
 import RankingScreen from '../screens/RankingScreen';
+import AdminDashboardScreen from '../screens/AdminDashboardScreen';
+import AdminPartidasScreen from '../screens/AdminPartidasScreen';
+import AdminSelecoesScreen from '../screens/AdminSelecoesScreen';
+import AdminUsuariosScreen from '../screens/AdminUsuariosScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -115,11 +119,37 @@ function AppTabs() {
   );
 }
 
+function AdminTabs() {
+  return (
+    <Tab.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: colors.background },
+        headerTintColor: colors.primary,
+        headerTitleStyle: { fontWeight: '800' },
+        tabBarStyle: { backgroundColor: colors.background, borderTopColor: colors.border, height: 64, paddingBottom: 7 },
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.muted,
+      }}
+    >
+      <Tab.Screen name="Painel" component={AdminDashboardScreen}
+        options={{ tabBarIcon: ({ color }) => <FontAwesome name="dashboard" size={21} color={color} /> }} />
+      <Tab.Screen name="Partidas" component={AdminPartidasScreen}
+        options={{ tabBarIcon: ({ color }) => <FontAwesome name="futbol-o" size={21} color={color} /> }} />
+      <Tab.Screen name="Seleções" component={AdminSelecoesScreen}
+        options={{ tabBarIcon: ({ color }) => <FontAwesome name="flag" size={20} color={color} /> }} />
+      <Tab.Screen name="Usuários" component={AdminUsuariosScreen}
+        options={{ tabBarIcon: ({ color }) => <FontAwesome name="users" size={20} color={color} /> }} />
+      <Tab.Screen name="Perfil" component={PerfilScreen}
+        options={{ tabBarIcon: ({ color }) => <FontAwesome name="user" size={22} color={color} /> }} />
+    </Tab.Navigator>
+  );
+}
+
 export default function AppNavigator() {
   const { usuario } = useAuth();
   return (
     <NavigationContainer>
-      {usuario ? <AppTabs /> : <AuthStack />}
+      {usuario ? (usuario.perfil === 'ADMIN' ? <AdminTabs /> : <AppTabs />) : <AuthStack />}
     </NavigationContainer>
   );
 }
